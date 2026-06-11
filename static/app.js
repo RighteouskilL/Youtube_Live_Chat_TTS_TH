@@ -4,6 +4,7 @@ let isPlaying = false;
 let isPaused = false;
 let settings = {};
 let aliases = {};
+let profanityWords = [];
 
 const player = document.getElementById('tts-player');
 const chatBox = document.getElementById('chat-box');
@@ -68,7 +69,8 @@ async function loadSettings() {
         document.getElementById('format-input').value = settings.read_format;
         document.getElementById('max-length-input').value = settings.max_length;
         document.getElementById('profanity-toggle').checked = settings.filter_profanity;
-        document.getElementById('profanity-list-input').value = (settings.profanity_list || []).join(', ');
+        profanityWords = settings.profanity_list || [];
+        renderProfanityList();
         
         aliases = settings.aliases || {};
         renderAliasList();
@@ -87,8 +89,6 @@ async function saveSettings() {
     const format = document.getElementById('format-input').value;
     const maxLen = parseInt(document.getElementById('max-length-input').value);
     const profanity = document.getElementById('profanity-toggle').checked;
-    const profanityListStr = document.getElementById('profanity-list-input').value;
-    const profanityList = profanityListStr.split(',').map(w => w.trim()).filter(w => w.length > 0);
     
     await fetch('/api/settings', {
         method: 'POST',
@@ -97,7 +97,7 @@ async function saveSettings() {
             read_format: format,
             max_length: maxLen,
             filter_profanity: profanity,
-            profanity_list: profanityList,
+            profanity_list: profanityWords,
             aliases: aliases
         })
     });
@@ -469,6 +469,42 @@ window.removeAlias = function(ytName) {
 function addAliasFromRightClick(ytName, newName) {
     aliases[ytName] = newName;
     renderAliasList();
+    saveSettings();
+}
+
+// Profanity Management
+function renderProfanityList() {
+    const list = document.getElementById('profanity-list');
+    list.innerHTML = '';
+    
+    profanityWords.forEach(word => {
+        const item = document.createElement('span');
+        item.className = 'inline-flex items-center bg-slate-800 border border-slate-600 text-slate-300 text-[10px] px-2 py-0.5 rounded-full';
+        item.innerHTML = `
+            ${word}
+            <button onclick="removeProfanityWord('${word}')" class="ml-1 text-red-400 hover:text-red-300 focus:outline-none"><i class="fa-solid fa-xmark"></i></button>
+        `;
+        list.appendChild(item);
+    });
+}
+
+window.addProfanityWord = function() {
+    const input = document.getElementById('profanity-new-word');
+    const word = input.value.trim();
+    
+    if (!word) return;
+    
+    if (!profanityWords.includes(word)) {
+        profanityWords.push(word);
+        renderProfanityList();
+        saveSettings();
+    }
+    input.value = '';
+}
+
+window.removeProfanityWord = function(word) {
+    profanityWords = profanityWords.filter(w => w !== word);
+    renderProfanityList();
     saveSettings();
 }
 
