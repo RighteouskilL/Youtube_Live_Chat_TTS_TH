@@ -109,12 +109,16 @@ recent_messages = []
 FLOOD_TIME_WINDOW = 15 # จดจำข้อความย้อนหลัง 15 วินาทีเพื่อกันสแปมรัวๆ
 
 def clean_message(msg: str) -> str:
-    # ลบลิงก์
-    msg = re.sub(r'http\S+', '', msg)
-    # ลบอีโมติคอนรูปแบบ :name: (เช่น :pushpin:)
-    msg = re.sub(r':\w+:', '', msg)
-    # ลบ Unicode Emoji ทุกรูปแบบเด็ดขาด
+    # 1. เอา Emoji ทั่วไปออก
     msg = emoji.replace_emoji(msg, replace='')
+    
+    # 2. เอา Custom Emoticon ของ YouTube ออก (รูปแบบ :emoticon-name:)
+    # มองหาคำที่ถูกครอบด้วย : : และไม่มีการเว้นวรรคอยู่ข้างใน
+    msg = re.sub(r':[^\s:]+:', '', msg)
+    
+    # 3. เอาลิงก์ออก
+    msg = re.sub(r'http\S+', '', msg)
+    
     return msg.strip()
 
 def apply_profanity_filter(msg: str) -> str:
