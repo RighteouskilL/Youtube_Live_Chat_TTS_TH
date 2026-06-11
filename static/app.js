@@ -68,6 +68,7 @@ async function loadSettings() {
         document.getElementById('format-input').value = settings.read_format;
         document.getElementById('max-length-input').value = settings.max_length;
         document.getElementById('profanity-toggle').checked = settings.filter_profanity;
+        document.getElementById('profanity-list-input').value = (settings.profanity_list || []).join(', ');
         
         aliases = settings.aliases || {};
         renderAliasList();
@@ -86,6 +87,8 @@ async function saveSettings() {
     const format = document.getElementById('format-input').value;
     const maxLen = parseInt(document.getElementById('max-length-input').value);
     const profanity = document.getElementById('profanity-toggle').checked;
+    const profanityListStr = document.getElementById('profanity-list-input').value;
+    const profanityList = profanityListStr.split(',').map(w => w.trim()).filter(w => w.length > 0);
     
     await fetch('/api/settings', {
         method: 'POST',
@@ -94,6 +97,7 @@ async function saveSettings() {
             read_format: format,
             max_length: maxLen,
             filter_profanity: profanity,
+            profanity_list: profanityList,
             aliases: aliases
         })
     });

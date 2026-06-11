@@ -168,6 +168,11 @@
                     <label for="profanity-toggle" class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-400 cursor-pointer"></label>
                 </div>
             </div>
+            
+            <div class="mt-2">
+                <label class="text-xs text-slate-300 mb-1 block">รายการคำหยาบ (คั่นแต่ละคำด้วยลูกน้ำ ,)</label>
+                <textarea id="profanity-list-input" class="w-full bg-slate-900 border border-slate-600 rounded px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500" rows="3" placeholder="เช่น: คำที่1, คำที่2" onchange="saveSettings()"></textarea>
+            </div>
         </div>
 
         <!-- Alias Management -->
