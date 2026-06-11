@@ -18,7 +18,13 @@ window.onload = async () => {
 
 async function initAudioDevices() {
     try {
-        // ดึงรายชื่ออุปกรณ์เสียง (ไม่ขอสิทธิ์ไมค์แล้วเพื่อความเป็นส่วนตัว)
+        // ดึงรายชื่ออุปกรณ์เสียง
+        // หมายเหตุ: ต้องขอสิทธิ์ไมโครโฟน เพื่อให้เบราว์เซอร์ยอมเผยชื่อเต็มของอุปกรณ์ (ไม่เช่นนั้นจะเห็นแค่ Device 1)
+        try {
+            await navigator.mediaDevices.getUserMedia({ audio: true });
+        } catch (e) {
+            console.log('User denied mic permission, will only see default device labels.');
+        }
         
         const devices = await navigator.mediaDevices.enumerateDevices();
         const audioOutputs = devices.filter(device => device.kind === 'audiooutput');
