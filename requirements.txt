@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+edge-tts
+pytchat
+emoji
+pywebview
+pystray
+pillow
